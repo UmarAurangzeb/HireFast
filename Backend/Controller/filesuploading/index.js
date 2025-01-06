@@ -23,6 +23,6 @@ export const uploadImage = multer({
     })
 });
 
-// export const imageUploadControllerWeb = (req, res) => {
-//     console.log("image path : ", req.file.location);
-// };
+export const imageUploadControllerWeb = (req, res) => {
+    console.log("image path : ", req.file.location);
+};

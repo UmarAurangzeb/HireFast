@@ -18,6 +18,7 @@ import Company from "./pages/Company.tsx";
 import SpecificCompany from "./pages/SpecificCompany.jsx";
 import AddCompany from "./pages/AddCompany.tsx";
 import { Toaster } from "@/components/ui/toaster"
+import FindCompanies from "./pages/FindCompanies.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,6 +42,11 @@ const router = createBrowserRouter([
             <AddCompany />
           </ProtectedRoute>
       },
+      {
+        path: "findcompanies",
+        element: <FindCompanies />
+      },
+
 
     ],
   },

@@ -98,14 +98,15 @@ export const getOneCompany = async (req, res) => {
                 const jobApplicantsQuery = `
                         SELECT 
                             COUNT(*) AS applicant_count,
-                            ARRAY_AGG(cv) AS cvs
+                            ARRAY_AGG(cv) AS cvs,
+                            ARRAY_AGG(student_id) AS students
                             FROM jobapplications
                             WHERE job_id = $1;
                     `;
                 const jobParams = [row.job_id];
                 const { rows: applicantsRows } = await pool.query(jobApplicantsQuery, jobParams);
 
-                const { applicant_count, cvs } = applicantsRows[0];
+                const { applicant_count, cvs, students } = applicantsRows[0];
 
                 return {
                     job_id: row.job_id,
@@ -117,6 +118,7 @@ export const getOneCompany = async (req, res) => {
                     closing_date: row.closing_date,
                     status: row.status,
                     applicant_count: parseInt(applicant_count, 10),
+                    students: students,
                     cvs: cvs || [],
                 };
             })
@@ -217,3 +219,57 @@ export const getcompanybyuserId = async (req, res) => {
         })
     }
 }
+
+
+export const getsearchedCompanies = async (req, res) => {
+    try {
+        const { query } = req.params;
+        console.log("query,", query)
+        if (!query) {
+            return res.status(400).json({
+                success: false,
+                message: "Query parameter is required",
+            });
+        }
+
+        let companies;
+
+        if (!isNaN(query)) {
+            const topN = parseInt(query, 10); // Convert the query to a number
+            const getTopCompaniesQuery = `
+                SELECT * 
+                FROM company
+                LIMIT $1
+            `;
+            const { rows } = await pool.query(getTopCompaniesQuery, [topN]);
+            companies = rows;
+        } else {
+            const searchQuery = `
+                SELECT * 
+                FROM company
+                WHERE LOWER(company_name) LIKE $1
+            `;
+            const { rows } = await pool.query(searchQuery, [`%${query.toLowerCase()}%`]);
+            companies = rows;
+        }
+
+
+        if (companies.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No companies found matching the criteria",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: companies,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};

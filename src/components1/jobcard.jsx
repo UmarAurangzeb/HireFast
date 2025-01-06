@@ -36,6 +36,7 @@ export default function JobCard({
   hasEmployerOpened,
   setJobData
 }) {
+  console.log("closing_date:", closing_date);
   const fileInputRef = useRef(null);
   const { toast } = useToast()
   const { authState } = useAuth();

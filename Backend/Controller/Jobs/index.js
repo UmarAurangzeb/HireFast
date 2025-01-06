@@ -123,7 +123,6 @@ export const deleteJob = async (req, res) => {
 
 export const getallCompaniesJobs = async (req, res) => {
     try {
-        // Query to fetch all jobs and their company names
         const selectQuery = `
             SELECT j.*, c.company_name
             FROM jobs j
@@ -139,7 +138,6 @@ export const getallCompaniesJobs = async (req, res) => {
             });
         }
 
-        // Add applicant count and students to each job
         const AddingtoRows = await Promise.all(
             rows.map(async (row) => {
                 const jobDetailsQuery = `

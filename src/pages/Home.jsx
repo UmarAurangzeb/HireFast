@@ -42,11 +42,19 @@ export default function Home() {
             future.
           </p>
         </div>
-        <Link to={userType === 'employer' ? '/company/Add' : 'applynow'}>
-          <button className="bg-customPurple text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato mx-10 mt-6">
-            {userType === 'employer' ? 'Post Job' : "Apply Now"}
-          </button>
-        </Link>
+        <div className="flex gap-x-2">
+          <Link to={userType === 'employer' ? '/company/Add' : 'applynow'}>
+            <button className="bg-customPurple text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato ml-10 mt-6">
+              {userType === 'employer' ? 'Post Job' : "Apply Now"}
+            </button>
+          </Link>
+          {userType !== 'employer' && <Link to={'/company/findcompanies'}>
+            <button className="bg-black text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato  mt-6">
+              Find Companies
+            </button>
+          </Link>
+          }
+        </div>
       </section>
 
       <section className="bg-customWhite py-12 px-6">

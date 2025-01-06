@@ -6,6 +6,7 @@ import axios from 'axios';
 import { Button } from './ui/button';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast"
+import { format } from 'date-fns';
 type JobData = {
     job_id: string | null;
     company_id: string | null;
@@ -61,7 +62,7 @@ const Jobs: React.FC = ({
                 description,
                 requirement,
                 jobtype: type,
-                closing_date: closingDate,
+                closing_date: closingDate ? format(new Date(closingDate), 'yyyy-MM-dd') : '',
                 status: status,
             });
         }
@@ -103,7 +104,9 @@ const Jobs: React.FC = ({
                     title: "Success!",
                     description: res.data.message,
                 });
+                onClose();
             }
+
         } catch (err) {
             console.log("Error posting job", err);
             toast({

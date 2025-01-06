@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast"
 import JobCard from "../components1/jobcard.jsx";
 import axios from "axios";
 const ApplyJobs = () => {
+  const [selectedFilter, setSelectedFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
   const { authState } = useAuth();
@@ -50,15 +51,47 @@ const ApplyJobs = () => {
       <div className="py-30 px-10">
         <Navbar />
       </div>
-      <HeroSection jobData={jobData} setJobData={setJobData} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
+      <HeroSection jobData={jobData} setJobData={setJobData} handleSearchChange={handleSearchChange} searchQuery={searchQuery} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
 
       {jobData && jobData.length === 0 ? (
         <h6 className='text-center mt-4 font-lato text-customPurple text-md'>
           No jobs Posted yett
         </h6>
       ) : (
-        <div className=" max-w-[1200px] mx-auto mt-4 flex gap-x-6 flex-wrap">
-          {filteredJobs.length > 0 && filteredJobs.map((job) => (
+        <div className=" w-full max-w-[1200px]  justify-center mx-auto mt-4 flex lg:gap-x-6 flex-wrap">
+          {filteredJobs.length > 0 && filteredJobs.filter((jobs) => {
+            let matchesFilters;
+            if (selectedFilter === '' || selectedFilter === 'all') {
+              return true;
+            }
+            else if (selectedFilter === 'applied' && jobs.students.includes(authState?.id)) {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'notapplied' && !jobs.students.includes(authState?.id)) {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'onsite' && jobs.jobtype === 'onsite') {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'remote' && jobs.jobtype === 'remote') {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'open' && jobs.status === 'open') {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'closed' && jobs.status === 'closed') {
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'low-to-high') {
+              filteredJobs.sort((a, b) => a.applicant_count - b.applicant_count);
+              matchesFilters = true;
+            }
+            else if (selectedFilter === 'high-to-low') {
+              filteredJobs.sort((a, b) => b.applicant_count - a.applicant_count);
+              matchesFilters = true;
+            }
+            return matchesFilters;
+          }).map((job) => (
             <div key={job.job_id} className=' my-2'>
               <JobCard
                 students={job.students}

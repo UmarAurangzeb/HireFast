@@ -112,10 +112,11 @@ export default function SpecificCompany() {
                             Company has no recent Openings
                         </h6>
                     ) : (
-                        <div className=" max-w-[1200px] mx-auto mt-4 flex gap-x-6 flex-wrap">
+                        <div className=" max-w-[1200px] justify-center mx-auto mt-4 flex gap-x-6 flex-wrap">
                             {jobData.length > 0 && jobData.map((job) => (
                                 <div key={job.job_id} className='my-2'>
                                     <JobCard
+                                        students={job.students}
                                         setjobsToggle={setjobsToggle}
                                         applicant_count={job.applicant_count}
                                         cvs={job.cvs}
