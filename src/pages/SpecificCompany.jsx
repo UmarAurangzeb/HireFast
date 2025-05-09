@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaBuilding, FaUsers } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator"
 import axios from 'axios';
 import { useNavigate } from "react-router";
 import { useAuth } from '../context/AuthContext.jsx'
 import Jobs from '../components/PostJobs.tsx'
 import JobCard from '../components1/jobcard.jsx';
+
 export default function SpecificCompany() {
     const [companyData, setCompanyData] = useState({});
     const [jobData, setJobData] = useState([{}]);
@@ -16,19 +17,25 @@ export default function SpecificCompany() {
     const { id } = useParams();
     const [hasEmployerOpened, setHasEmployerOpened] = useState(false);
     const [jobToggle, setjobsToggle] = useState(false);
-    const idd = '1f461ddb-c5be-4512-87da-8cb0bc0ac5ff';
+    const [isLoading, setIsLoading] = useState(true);
     let navigate = useNavigate();
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [showUpdateJob, setShowUpdateJob] = useState(false);
+    const [selectedCVs, setSelectedCVs] = useState([]);
+    const [showCVsModal, setShowCVsModal] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
                 const res = await axios.get(`http://localhost:8000/getonecompany/${id}`);
-                console.log("found company:", res.data);
                 setCompanyData(res.data.company);
-                console.log(res.data.jobs);
                 setJobData(res.data.jobs);
                 setHasEmployerOpened(authState.id === res.data.company.employer_id);
             } catch (error) {
                 console.error("Error fetching company data:", error);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchData();
@@ -36,85 +43,116 @@ export default function SpecificCompany() {
 
     useEffect(() => {
         if (jobToggle) {
-            document.body.style.overflow = 'hidden'; // Disable scrolling
+            document.body.style.overflow = 'hidden';
         } else {
-            document.body.style.overflow = 'auto'; // Enable scrolling
+            document.body.style.overflow = 'auto';
         }
         return () => {
-            document.body.style.overflow = 'auto'; // Ensure it's reset when the component is unmounted
+            document.body.style.overflow = 'auto';
         };
     }, [jobToggle]);
 
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const res = await axios.get(`http://localhost:8000/getalljobs/${id}`);
-    //             console.log("jobs posted:", res.data);
-    //             // setCompanyData(res.data);
-
-    //         } catch (error) {
-    //             console.error("Error fetching jobs:", error);
-    //         }
-    //     }
-    //     fetchData();
-    // }, [authState, id])
     const handleupdateClick = () => {
         navigate(`/Company/Add/${id}`);
     }
 
     const handlejobsClick = () => {
-        console.log("toggling jobs");
         setjobsToggle(prev => !prev);
     }
-    if (companyData.length === 0 && jobData.length === 0) {
+
+    if (isLoading) {
         return (
-            <>
-                loading...
-            </>
-        )
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-customPurple"></div>
+            </div>
+        );
     }
 
     return (
-        <>
-            <section className='flex mt-[68px] justify-between w-full  '>
-                <div className='flex  '>
-                    <div className=' ml-6'>
-                        <Avatar className="w-40 h-40 object-contain">
-                            <AvatarImage src={`${companyData.imageurl}`} />
-                            <AvatarFallback>CN</AvatarFallback>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+            <div className="max-w-7xl mx-auto px-4">
+                {/* Company Header Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                        <Avatar className="w-40 h-40 border-4 border-white shadow-xl">
+                            <AvatarImage
+                                src={companyData.imageurl}
+                                className="w-full h-full object-cover"
+                            />
+                            <AvatarFallback className="bg-customPurple text-white text-4xl">
+                                {companyData.company_name?.charAt(0) || "C"}
+                            </AvatarFallback>
                         </Avatar>
-                    </div>
-                    <div className='flex flex-col'>
-                        <h1 className='font-bold text-2xl mt-14 ml-4'>{companyData.company_name}</h1>
-                        <p className='text-gray-400 ml-4'>number of employees: {1}</p>
+
+                        <div className="flex-1 text-center md:text-left">
+                            <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                                {companyData.company_name}
+                            </h1>
+                            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <FaBuilding className="text-customPurple" />
+                                    <span>Technology</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <FaUsers className="text-customPurple" />
+                                    <span>{companyData.employee_count || "1-50"} employees</span>
+                                </div>
+                            </div>
+
+                            {hasEmployerOpened && (
+                                <Button
+                                    className="bg-customPurple hover:bg-customPurple/90 mt-4 px-6 py-2 rounded-full transition-all duration-200"
+                                    onClick={handleupdateClick}
+                                >
+                                    <FaPlus className="mr-2" />
+                                    Update Profile
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
-                {hasEmployerOpened && <Button className="bg-customPurple mt-16 mr-8" onClick={handleupdateClick}><FaPlus />Update Profile</Button>
-                }            </section>
-            <Separator className="mt-6" />
 
-            <section className='mt-4 '>
-                <div className='border-[1px] md:mx-auto rounded-lg px-4 py-6   '>
-                    <h1 className=' text-xl font-bold text-gray-800  mb-2 font-Montserrat '>About Us</h1>
-                    <p className=" break-words word-wrap text-wrap text-justify text-sm pl-2 text-gray-600">
-                        {companyData.description}
+                {/* About Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">About Us</h2>
+                    <p className="text-gray-600 leading-relaxed">
+                        {companyData.description || "No description available."}
                     </p>
                 </div>
-                <div className='mt-10 bg-gradient-to-r from-blue-100 via-purple-100 to-blue-50 px-4 py-6 rounded-lg'>
-                    <div className='flex justify-between '>
-                        <h1 className=' text-xl font-bold text-gray-800 text-center mb-2 font-Montserrat'>Available Jobs</h1>
-                        {hasEmployerOpened && <Button className=" bg-customPurple relative bottom- " onClick={() => handlejobsClick()}><FaPlus />Post Job</Button>
-                        }
+
+                {/* Jobs Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-gray-800">Available Positions</h2>
+                        {hasEmployerOpened && (
+                            <Button
+                                className="bg-customPurple hover:bg-customPurple/90 px-6 py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg"
+                                onClick={() => { setSelectedJob(null); setShowUpdateJob(true); }}
+                            >
+                                <FaPlus className="mr-2" />
+                                Post New Job
+                            </Button>
+                        )}
                     </div>
+
                     {jobData && jobData.length === 0 ? (
-                        <h6 className='text-center mt-4 font-lato text-gray-600 text-sm'>
-                            Company has no recent Openings
-                        </h6>
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">No open positions at the moment</p>
+                            <p className="text-gray-400 mt-2">Check back later for new opportunities</p>
+                            {hasEmployerOpened && (
+                                <Button
+                                    className="bg-customPurple hover:bg-customPurple/90 px-6 py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg mt-4"
+                                    onClick={handlejobsClick}
+                                >
+                                    <FaPlus className="mr-2" />
+                                    Post New Job
+                                </Button>
+                            )}
+                        </div>
                     ) : (
-                        <div className=" max-w-[1200px] justify-center mx-auto mt-4 flex gap-x-6 flex-wrap">
-                            {jobData.length > 0 && jobData.map((job) => (
-                                <div key={job.job_id} className='my-2'>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {jobData.map((job) => (
+                                <div key={job.job_id} className="transform transition-all duration-200 hover:scale-[1.03] focus:scale-[1.03] outline-none focus:ring-2 focus:ring-customPurple rounded-xl" tabIndex={0} aria-label={`View details for job ${job.title}`}>
                                     <JobCard
                                         students={job.students}
                                         setjobsToggle={setjobsToggle}
@@ -132,22 +170,57 @@ export default function SpecificCompany() {
                                         status={job.status}
                                         hasEmployerOpened={hasEmployerOpened}
                                         setJobData={setJobData}
+                                        onUpdateJob={() => { setSelectedJob(job); setShowUpdateJob(true); }}
+                                        onViewCVs={() => { setSelectedCVs(job.cvs || []); setShowCVsModal(true); }}
                                     />
                                 </div>
                             ))}
                         </div>
                     )}
-                    {jobToggle && <Jobs
-                        onClose={() => { setjobsToggle(false) }}
-                        company_id={id}
-                        setJobData={setJobData}
-
-                    />}
-
                 </div>
 
-            </section>
-        </>
+                {showUpdateJob && (
+                    <Jobs
+                        updateJob={!!selectedJob}
+                        setJobData={setJobData}
+                        company_id={companyData.company_id}
+                        job_id={selectedJob?.job_id}
+                        title={selectedJob?.title || ""}
+                        company={companyData.company_name}
+                        type={selectedJob?.jobtype || "onsite"}
+                        salary={selectedJob?.salary || ""}
+                        description={selectedJob?.description || ""}
+                        requirement={selectedJob?.requirement || ""}
+                        status={selectedJob?.status || "open"}
+                        closingDate={selectedJob?.closing_date || ""}
+                        onClose={() => { setShowUpdateJob(false); setSelectedJob(null); }}
+                    />
+                )}
 
-    )
+                {showCVsModal && (
+                    <div className="fixed inset-0 z-[1200] flex items-center justify-center">
+                        <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setShowCVsModal(false)}></div>
+                        <div className="fixed w-full max-w-lg max-h-[80vh] overflow-y-auto bg-customWhite border-2 rounded-2xl z-[1250] border-customPurple top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 shadow-2xl flex flex-col">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-customPurple">CVs</h2>
+                                <Button className='bg-customPurple px-4 py-1' onClick={() => setShowCVsModal(false)}>Close</Button>
+                            </div>
+                            <div className="space-y-3">
+                                {selectedCVs.length === 0 ? (
+                                    <p className="text-gray-500">No CVs uploaded yet.</p>
+                                ) : (
+                                    selectedCVs.map((cv, idx) => (
+                                        <div key={idx} className="w-full bg-gray-100 flex justify-between py-2 items-center shadow-sm rounded-md px-3">
+                                            <p className="truncate max-w-xs">{cv && decodeURIComponent(cv.substring(cv.lastIndexOf("/") + 1)).replace(/^\d+-/, "")}</p>
+                                            <Button className="bg-customPurple"><a href={cv} target="_blank" rel="noopener noreferrer" download>Download CV</a></Button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }

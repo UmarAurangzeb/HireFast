@@ -4,82 +4,128 @@ import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
 
 export default function FindCompanies() {
     const [searchQuery, setSearchQuery] = useState("");
     const [companies, setCompanies] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
+    const [searchError, setSearchError] = useState("");
 
     const fetchCompanies = async (query) => {
+        setIsLoading(true);
         try {
             const res = await axios.get(`http://localhost:8000/getfewcompanies/${query}`);
             setCompanies(res.data.data);
             setErrorMessage("");
         } catch (error) {
-            setCompanies([]); // Clear the companies list if an error occurs
-            setErrorMessage("No Company found");
+            setCompanies([]);
+            setErrorMessage("No companies found matching your search");
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    // Initial Fetch
     useEffect(() => {
-        fetchCompanies("5"); // Fetch default data initially
+        fetchCompanies("5");
     }, []);
 
-    // Form Submit Logic
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent form from reloading the page
+        e.preventDefault();
+        if (searchQuery.trim().length < 2) {
+            setSearchError("Please enter at least 2 characters to search.");
+            return;
+        }
+        setSearchError("");
         const query = searchQuery.trim().length > 0 ? searchQuery : "4";
         await fetchCompanies(query);
-        setSearchQuery(""); // Reset search query to default
     };
 
     return (
-        <div className="pt-20 flex flex-col items-center bg-gray-50 min-h-screen">
-            <div className="w-full max-w-6xl flex flex-col items-center">
+        <div className="pt-24 pb-12 flex flex-col items-center bg-gradient-to-b from-gray-50 to-white min-h-screen">
+            <div className="w-full max-w-6xl px-4">
+                <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Discover Companies</h1>
+
                 <form
-                    className="w-full flex justify-center items-center"
-                    onSubmit={handleSubmit} // Form submit handler
+                    className="w-full flex justify-center items-center gap-2 mb-8"
+                    onSubmit={handleSubmit}
+                    role="search"
+                    aria-label="Search companies"
                 >
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
-                        placeholder="Search for companies..."
-                        className="w-full max-w-4xl px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-customPurple"
-                    />
-                    <Button type="submit" className="bg-customPurple ml-2 mt-[2px]">
-                        Submit
+                    <div className="relative w-full max-w-2xl">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                if (e.target.value.length >= 2) setSearchError("");
+                            }}
+                            placeholder="Search companies by name, industry, or location..."
+                            className="w-full px-4 py-3 pl-12 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-transparent shadow-sm"
+                            aria-label="Search companies"
+                        />
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    </div>
+                    <Button
+                        type="submit"
+                        className="bg-customPurple hover:bg-customPurple/90 px-6 py-3 rounded-full transition-all duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-customPurple"
+                        aria-label="Search"
+                    >
+                        <Search className="w-5 h-5" />
+                        Search
                     </Button>
                 </form>
-            </div>
+                {searchError && (
+                    <div className="text-red-600 text-center mb-4">{searchError}</div>
+                )}
 
-            <div className="h-[100vh] w-[95%] mt-4 border-2 rounded-md bg-customWhite shadow-md">
-                <div>
-                    <h1 className="text-center font-semibold font-Lato text-2xl">Companies</h1>
-                </div>
-                <div>
-                    {companies.length > 0 ? (
-                        companies.map((company) => (
-                            <Link to={`/company/${company.company_id}`} key={company.company_id}>
-                                <div className="flex bg-gradient-to-r from-blue-100 via-purple-100 to-blue-50 rounded-md hover:bg-gradient-to-r hover:from-blue-200 hover:via-purple-200 hover:to-blue-100 cursor-pointer mt-2 mx-2">
-                                    <Avatar className="w-20 h-20 border-1 rounded-full border-black overflow-hidden flex items-center justify-center">
-                                        <AvatarImage
-                                            src={company.imageurl}
-                                            alt={company.name || "Company"}
-                                            className="w-full h-full object-cover rounded-full"
-                                        />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <h1 className="my-auto text-center flex-1 text-xl font-Roboto">
-                                        {company.company_name}
-                                    </h1>
-                                </div>
-                            </Link>
-                        ))
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                    {isLoading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-customPurple"></div>
+                        </div>
+                    ) : companies.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {companies.map((company) => (
+                                <Link
+                                    to={`/company/${company.company_id}`}
+                                    key={company.company_id}
+                                    className="transform transition-all duration-200 hover:scale-[1.03] focus:scale-[1.03] outline-none focus:ring-2 focus:ring-customPurple rounded-xl"
+                                    tabIndex={0}
+                                    aria-label={`View details for ${company.company_name}`}
+                                >
+                                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 hover:shadow-lg focus:shadow-lg transition-all duration-200">
+                                        <div className="flex items-center space-x-4">
+                                            <Avatar className="w-16 h-16 border-2 border-white shadow-md overflow-hidden">
+                                                <AvatarImage
+                                                    src={company.imageurl}
+                                                    alt={company.name || "Company"}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <AvatarFallback className="bg-customPurple text-white w-full h-full flex items-center justify-center">
+                                                    {company.company_name?.charAt(0) || "C"}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1">
+                                                <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                                                    {company.company_name}
+                                                </h2>
+                                                <p className="text-sm text-gray-600">
+                                                    {company.industry || "Technology"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
                     ) : (
-                        <p className="text-center text-gray-500 mt-4">{errorMessage}</p>
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">{errorMessage}</p>
+                            <p className="text-gray-400 mt-2">Try adjusting your search terms</p>
+                        </div>
                     )}
                 </div>
             </div>

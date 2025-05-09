@@ -117,89 +117,85 @@ const Jobs: React.FC = ({
         }
     };
     return (
-        <div
-            className="h-10/12 w-10/12 max-h-screen max-w-screen overflow-y-scroll scrollbar-hide overflow-hidden border-2 rounded-lg z-10 bg-gray-100 border-customPurple fixed top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 p-6"
-        >
-            <Button className='bg-customPurple px-6 ' onClick={() => { onClose() }}>Back</Button>
-            <h1 className="text-2xl font-bold text-center mb-6 font-Lato">Create Job</h1>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                    <label htmlFor="title" className="block text-lg font-semibold font-Montserrat">Title</label>
-                    <input
-                        id="title"
-                        {...register("title")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple font-Lato"
-                        placeholder="Job title"
-                    />
-                    {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="description" className="block text-lg font-semibold font-Montserrat">Description</label>
-                    <textarea
-                        id="description"
-                        {...register("description")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple font-Lato"
-                        placeholder="Job description"
-                    />
-                    {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-                </div>
-                <div>
-                    <label htmlFor="requirement" className="block text-lg font-semibold font-Montserrat">Requirement</label>
-                    <textarea
-                        id="requirement"
-                        {...register("requirement")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple font-Lato"
-                        placeholder="Job Requirements"
-                    />
-                    {errors.requirement && <p className="text-red-500 text-sm">{errors.requirement.message}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="jobtype" className="block text-lg font-semibold font-Montserrat">Job Type</label>
-                    <select
-                        id="jobtype"
-                        {...register("jobtype")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple"
+        <>
+            <div className="fixed inset-0 bg-black bg-opacity-40 z-[1000]" onClick={onClose}></div>
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[95vh] overflow-y-auto bg-white border-4 border-customPurple rounded-3xl z-[1100] p-10 shadow-2xl flex flex-col mx-auto">
+                <Button className='bg-customPurple px-6 mb-4 self-end' onClick={onClose}>Close</Button>
+                <h1 className="text-3xl font-bold text-center mb-8 font-Lato">{updateJob ? 'Update Job' : 'Create Job'}</h1>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <div>
+                        <label htmlFor="title" className="block text-lg font-semibold font-Montserrat">Title</label>
+                        <input
+                            id="title"
+                            {...register("title")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple font-Lato text-lg"
+                            placeholder="Job title"
+                        />
+                        {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="description" className="block text-lg font-semibold font-Montserrat">Description</label>
+                        <textarea
+                            id="description"
+                            {...register("description")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple font-Lato text-lg"
+                            placeholder="Job description"
+                        />
+                        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="requirement" className="block text-lg font-semibold font-Montserrat">Requirement</label>
+                        <textarea
+                            id="requirement"
+                            {...register("requirement")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple font-Lato text-lg"
+                            placeholder="Job Requirements"
+                        />
+                        {errors.requirement && <p className="text-red-500 text-sm mt-1">{errors.requirement.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="jobtype" className="block text-lg font-semibold font-Montserrat">Job Type</label>
+                        <select
+                            id="jobtype"
+                            {...register("jobtype")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple text-lg"
+                        >
+                            <option value="onsite">Onsite</option>
+                            <option value="remote">Remote</option>
+                        </select>
+                        {errors.jobtype && <p className="text-red-500 text-sm mt-1">{errors.jobtype.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="closing_date" className="block text-lg font-semibold font-Montserrat">Closing Date</label>
+                        <input
+                            type="date"
+                            id="closing_date"
+                            {...register("closing_date")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple text-lg"
+                        />
+                        {errors.closing_date && <p className="text-red-500 text-sm mt-1">{errors.closing_date.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="status" className="block text-lg font-semibold font-Montserrat">Status</label>
+                        <select
+                            id="status"
+                            {...register("status")}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-customPurple text-lg"
+                        >
+                            <option value="open">Open</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                        {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-customPurple text-white py-3 rounded-full text-lg font-Lato shadow-md hover:bg-customPurple/90 transition-all"
                     >
-                        <option value="onsite">Onsite</option>
-                        <option value="remote">Remote</option>
-                    </select>
-                    {errors.jobtype && <p className="text-red-500 text-sm">{errors.jobtype.message}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="closing_date" className="block text-lg font-semibold font-Montserrat">Closing Date</label>
-                    <input
-                        type="date"
-                        id="closing_date"
-                        {...register("closing_date")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple"
-                    />
-                    {errors.closing_date && <p className="text-red-500 text-sm">{errors.closing_date.message}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="status" className="block text-lg font-semibold font-Montserrat">Status</label>
-                    <select
-                        id="status"
-                        {...register("status")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-customPurple focus:border-customPurple"
-                    >
-                        <option value="open">Open</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                    {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-customPurple text-white py-2 rounded-md hover:bg-purple-700"
-                >
-                    {isSubmitting ? '...Submitting' : 'Submit'}
-                </button>
-            </form>
-        </div>
+                        {isSubmitting ? '...Submitting' : 'Submit'}
+                    </button>
+                </form>
+            </div>
+        </>
     );
 };
 

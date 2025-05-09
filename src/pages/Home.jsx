@@ -5,6 +5,7 @@ import Signout from '../components/Homepage/Signout.tsx';
 import { useAuth } from '../context/AuthContext.jsx'
 // import Navbar from '../components/Navbar.jsx';
 import Navbar from "../components1/navbar.jsx";
+import { FaRocket, FaSearch, FaUserCheck, FaUserEdit } from "react-icons/fa";
 
 export default function Home() {
   const { authState } = useAuth();
@@ -29,73 +30,73 @@ export default function Home() {
   return (
     <div>
       <Navbar />
-      <section className="min-h-screen bg-customWhite flex flex-col justify-center items-start">
-        <h1 className=" text-[90px] md:text-[150px] lg:text-[200px] font-Montserrat font-bold text-customBlack mx-10 -mt-20">
+      <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center items-start pt-24 pb-8">
+        <h1 className="text-[48px] md:text-[90px] lg:text-[150px] font-Montserrat font-bold text-customBlack mx-10 mb-2">
           hire<span className="text-customPurple">FAST</span>
         </h1>
-        <div className=" w-3/4 text-wrap mt-10 xl:mt-0">
-          <p className="text-10px md-[14px] lg:text-[18px] font-Roboto text-customBlack mx-11 -mt-10 whitespace-pre-line">
-            hireFAST streamlines university event recruitment by simplifying
-            student profiles and job applications, eliminating long queues and
-            inefficient QR-code processes. It ensures a seamless experience for
-            events like DevDay and Procom, letting students focus on their
-            future.
+        <div className="w-full md:w-3/4 text-wrap mt-4 xl:mt-0">
+          <p className="text-lg md:text-xl lg:text-2xl font-Roboto text-customBlack mx-11 mb-2 whitespace-pre-line">
+            hireFAST streamlines university event recruitment by simplifying student profiles and job applications, eliminating long queues and inefficient QR-code processes. It ensures a seamless experience for events like DevDay and Procom, letting students focus on their future.
           </p>
         </div>
-        <div className="flex gap-x-2">
+        <div className="flex flex-wrap gap-4 mt-6 mx-10">
           <Link to={userType === 'employer' ? '/company/Add' : 'applynow'}>
-            <button className="bg-customPurple text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato ml-10 mt-6">
+            <button className="bg-customPurple text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato flex items-center gap-2 text-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-customPurple">
+              <FaRocket className="text-xl" />
               {userType === 'employer' ? 'Post Job' : "Apply Now"}
             </button>
           </Link>
           {userType !== 'employer' && <Link to={'/company/findcompanies'}>
-            <button className="bg-black text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato  mt-6">
+            <button className="bg-black text-white px-8 py-4 rounded-full hover:drop-shadow-l font-Lato flex items-center gap-2 text-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-customPurple">
+              <FaSearch className="text-xl" />
               Find Companies
             </button>
-          </Link>
-          }
+          </Link>}
         </div>
       </section>
 
-      <section className="bg-customWhite py-12 px-6">
-        <div className="mx-auto flex flex-col md:flex-row md:items-start">
-          <div className="w-full md:w-1/4 flex flex-row md:flex-col space-y-0 md:space-y-11 space-x-4 md:space-x-0 mb-8 md:mb-0">
+      <section className="bg-gradient-to-b from-gray-50 to-white py-12 px-6">
+        <div className="mx-auto flex flex-col md:flex-row md:items-start gap-8">
+          <div className="w-full md:w-1/4 flex flex-row md:flex-col space-y-0 md:space-y-8 space-x-4 md:space-x-0 mb-8 md:mb-0">
             <button
-              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 
+              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 flex items-center gap-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-customPurple
           ${selectedFeature === "QuickJobSearch"
-                  ? "bg-customPurple text-customWhite"
-                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"
-                }`}
+                  ? "bg-customPurple text-customWhite shadow-lg"
+                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"}
+                `}
               onClick={() => setSelectedFeature("QuickJobSearch")}
+              aria-pressed={selectedFeature === "QuickJobSearch"}
             >
-              Quick Job Search
+              <FaSearch /> Quick Job Search
             </button>
 
             <button
-              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 
+              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 flex items-center gap-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-customPurple
           ${selectedFeature === "RealTimeTracking"
-                  ? "bg-customPurple text-customWhite"
-                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"
-                }`}
+                  ? "bg-customPurple text-customWhite shadow-lg"
+                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"}
+                `}
               onClick={() => setSelectedFeature("RealTimeTracking")}
+              aria-pressed={selectedFeature === "RealTimeTracking"}
             >
-              Real-Time Application Tracking
+              <FaUserCheck /> Real-Time Application Tracking
             </button>
 
             <button
-              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 
+              className={`font-Lato text-lg px-4 py-4 rounded-full border-2 flex items-center gap-2 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-customPurple
           ${selectedFeature === "ProfileManagement"
-                  ? "bg-customPurple text-customWhite"
-                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"
-                }`}
+                  ? "bg-customPurple text-customWhite shadow-lg"
+                  : "bg-customWhite text-customBlack border-customWhite hover:border-customPurple"}
+                `}
               onClick={() => setSelectedFeature("ProfileManagement")}
+              aria-pressed={selectedFeature === "ProfileManagement"}
             >
-              Profile Management
+              <FaUserEdit /> Profile Management
             </button>
           </div>
 
           <div className="w-full md:w-3/4 md:pl-16">
-            <h2 className="font-Montserrat text-4xl md:text-8xl text-customPurple mb-4">
+            <h2 className="font-Montserrat text-4xl md:text-6xl text-customPurple mb-4 transition-all duration-150">
               {selectedFeature.replace(/([A-Z])/g, " $1")}
             </h2>
             <p className="font-Roboto text-customBlack text-base py-4 text-[20px]">

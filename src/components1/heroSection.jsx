@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
 const HeroSection = ({ jobData, setJobData, handleSearchChange, searchQuery, selectedFilter, setSelectedFilter }) => {
   return (
     <div className="flex justify-center items-center pt-52">
-      <div className="text-center py-46 bg-customWhite relative">
+      <div className="text-center py-46 relative">
         <span className="mx-auto px-6 py-2 rounded-full bg-gray-100 text-[#F83002] font-medium font-Lato">
           Job Hunt !!
         </span>
@@ -12,7 +12,7 @@ const HeroSection = ({ jobData, setJobData, handleSearchChange, searchQuery, sel
           <span className="text-customPurple">Dream Jobs</span>
         </h1>
 
-        <div className="flex  lg:relative">
+        <div className="flex lg:relative">
           <div className="flex justify-center items-center w-3/4 lg:w-full max-w-[600px] mx-auto mt-8 border border-gray-300 rounded-full shadow-lg overflow-hidden">
             <input
               type="text"
@@ -31,7 +31,7 @@ const HeroSection = ({ jobData, setJobData, handleSearchChange, searchQuery, sel
               id="filter"
               value={selectedFilter}
               onChange={(e) => { setSelectedFilter(e.target.value) }}
-              className="bordertext-center font-Lato  px-4 w-36 shadow-md  inline-block  focus:ring-2 focus:ring-customPurple focus:outline-none border-2 border-gray-400 focus:border-gray-50 rounded-lg cursor-pointer hover:bg-customWhite text-center py-2  "
+              className="bordertext-center font-Lato px-4 w-36 shadow-md inline-block focus:ring-2 focus:ring-customPurple focus:outline-none border-2 border-gray-400 focus:border-gray-50 rounded-lg cursor-pointer hover:bg-customWhite text-center py-2"
             >
               <option value="" disabled>
                 Select Filter

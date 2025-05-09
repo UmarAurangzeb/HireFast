@@ -34,7 +34,9 @@ export default function JobCard({
   closing_date,
   status,
   hasEmployerOpened,
-  setJobData
+  setJobData,
+  onUpdateJob,
+  onViewCVs
 }) {
   console.log("closing_date:", closing_date);
   const fileInputRef = useRef(null);
@@ -44,10 +46,8 @@ export default function JobCard({
   const [isRequirementExpanded, setRequirementExpanded] = useState(false);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [openCvs, setopencvs] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appliedAlready, setAppliedAlready] = useState(false);
-  const [updateJob, setUpdateJob] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -137,15 +137,6 @@ export default function JobCard({
     return fullFileName.replace(/^\d+-/, "");
   };
 
-  const handlecvClick = () => {
-    setopencvs(prev => !prev);
-    if (!openCvs) {
-      document.body.style.overflow = 'hidden';
-    }
-    else {
-      document.body.style.overflow = 'auto';
-    }
-  }
   return (
     <>
       <div className="bg-white shadow-md rounded-3xl  p-6 border hover:shadow-2xl transition-shadow duration-300 w-[380px] min-h-[350px] mx-auto relative">
@@ -227,13 +218,13 @@ export default function JobCard({
             <div className="flex flex-row gap-x-2">
               <button
                 className="mt-4 bg-customPurple text-white py-2 px-4 rounded hover:bg-purple-700 font-Lato"
-                onClick={() => setUpdateJob(true)}
+                onClick={onUpdateJob}
               >
                 Update Job
               </button>
               {applicant_count > 0 && <button
                 className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-purple-700 font-Lato"
-                onClick={handlecvClick}
+                onClick={onViewCVs}
               >
                 View CVs
               </button>}
@@ -256,46 +247,6 @@ export default function JobCard({
             </div>
           )}
       </div >
-      {openCvs && (
-        <>
-          <div className="fixed w-2/4 h-2/4 bg-customWhite max-h-screen max-w-screen overflow-y-scroll scrollbar-hide overflow-hidden border-2 rounded-lg z-10  border-customPurple top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 py-6">
-            <Button className='bg-customPurple px-6 ml-2 ' onClick={handlecvClick}>Back</Button>
-            <div>
-              {
-                cvs.map((cv) => {
-                  return (
-                    <>
-                      <div className="w-full bg-gray-200 flex justify-between py-2 items-center shadow-md mt-2 px-2">
-
-                        <p>{extractFileName(cv)}:</p>
-                        <Button className="bg-customPurple "><Link to={cv} target="_blank" download>download cv</Link></Button>
-
-                      </div>
-                    </>
-                  )
-                })
-              }
-            </div>
-          </div>
-        </>)
-      }
-      {updateJob && (
-        <Jobs
-          updateJob={updateJob}
-          setJobData={setJobData}
-          company_id={company_id}
-          job_id={job_id}
-          title={title}
-          company={company}
-          type={type}
-          salary={salary}
-          description={description}
-          requirement={requirement}
-          status={status}
-          closingDate={closing_date}
-          onClose={() => setUpdateJob(false)}
-        />
-      )}
     </>
   )
 }

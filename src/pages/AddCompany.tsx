@@ -3,15 +3,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from 'axios';
-import Company from './Company';
 import { Button } from '@/components/ui/button';
-import { FaPlus } from "react-icons/fa";
-import { Dice1 } from 'lucide-react';
+import { FaPlus, FaGlobe, FaBuilding, FaInfoCircle } from "react-icons/fa";
 import { IoIosClose } from "react-icons/io";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx'
-import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast"
+
 type CompanyData = {
     company_id: string;
     company_name: string;
@@ -182,83 +180,141 @@ export default function AddCompany() {
 
 
     return (
-        <div className='mt-[68px] min-h-screen  bg-gradient-to-br from-purple-200 to-gray-200 '>
-            <div className='w-5/6 mx-auto text-center'>
-                <form action="#"
-                    className='w-full flex flex-col gap-y-4  rounded-md mt-2 px-4 py-10 '
-                    onSubmit={handleSubmit(onSubmit)}>
-                    <h1 className='font-semibold text-4xl pt-4 font-Montserrat'>Add Company</h1>
-                    <div className='flex flex-col gap-y-1 '>
-                        <label htmlFor="company name" className='text-md text-left font-semibold font-Roboto'>Company Name</label>
-                        <input type="text"
-                            id="company name"
-                            {...register("company_name")}
-                            className='focus:outline-none active:outline-none border-[1px] rounded-md px-1 py-1 focus:border-customPurple font-Lato '
-                            placeholder="Enter company name"
-                        />
-                        {errors.company_name && (
-                            <div className="text-red-600 text-left">{errors.company_name.message}</div>
-                        )}
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+            <div className="max-w-3xl mx-auto px-4">
+                <div className="bg-white rounded-2xl shadow-lg p-8">
+                    <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
+                        {companyId ? 'Update Company' : 'Add New Company'}
+                    </h1>
 
-                    </div>
-                    <div className='flex flex-col gap-y-1 '>
-                        <Button className={`${isImageUploaded && ''}cursor-pointer  relative mt-2`} disabled={isImageUploaded}>
-                            <label htmlFor="upload" className="text-md flex text-left font-semibold cursor-pointer">
-                                {isImageUploaded ? (
-                                    <p className='text-green-400 font-Roboto'>Image upload successful</p>
-                                ) : (
-                                    <>
-                                        <FaPlus className="mr-2 relative top-[2px] font-Roboto" />
-                                        Upload Profile Picture
-                                    </>
-                                )}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Company Name Field */}
+                        <div className="space-y-2">
+                            <label htmlFor="company_name" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <FaBuilding className="text-customPurple" />
+                                Company Name
                             </label>
-
                             <input
-                                type="file"
-                                id="upload"
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer font-Lato"
-                                accept="image/*"
-                                {...register("profilePic")}
-                                onChange={(e) => handlefileChange(e)}
+                                type="text"
+                                id="company_name"
+                                {...register("company_name")}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-transparent transition-all duration-200"
+                                placeholder="Enter your company name"
                             />
+                            {errors.company_name && (
+                                <p className="text-sm text-red-500">{errors.company_name.message}</p>
+                            )}
+                        </div>
+
+                        {/* Profile Picture Upload */}
+                        <div className="space-y-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <FaPlus className="text-customPurple" />
+                                Company Logo
+                            </label>
+                            <div className="flex items-center gap-4">
+                                <Button
+                                    type="button"
+                                    className={`relative ${isImageUploaded
+                                        ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                                        : 'bg-customPurple/10 text-customPurple hover:bg-customPurple/20'
+                                        } transition-all duration-200 border-2 border-customPurple/20`}
+                                    disabled={isImageUploaded}
+                                >
+                                    <label htmlFor="upload" className="flex items-center gap-2 cursor-pointer px-4 py-2">
+                                        {isImageUploaded ? (
+                                            <span className="text-green-600 font-medium">Image uploaded</span>
+                                        ) : (
+                                            <>
+                                                <FaPlus className="text-customPurple" />
+                                                <span className="font-medium">Upload Logo</span>
+                                            </>
+                                        )}
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="upload"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        accept="image/*"
+                                        {...register("profilePic")}
+                                        onChange={handlefileChange}
+                                    />
+                                </Button>
+
+                                {imagePreview && (
+                                    <div className="relative w-20 h-20">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Company Logo Preview"
+                                            className="w-full h-full object-cover rounded-lg border-2 border-gray-200"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setImagePreview(null);
+                                                setIsImageUploaded(false);
+                                                setCompanyData(prev => ({ ...prev, imageurl: null }));
+                                            }}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                        >
+                                            <IoIosClose className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* About Us Field */}
+                        <div className="space-y-2">
+                            <label htmlFor="description" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <FaInfoCircle className="text-customPurple" />
+                                About Us
+                            </label>
+                            <textarea
+                                id="description"
+                                {...register("description")}
+                                rows={4}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-transparent transition-all duration-200 resize-none"
+                                placeholder="Tell us about your company..."
+                            />
+                            {errors.description && (
+                                <p className="text-sm text-red-500">{errors.description.message}</p>
+                            )}
+                        </div>
+
+                        {/* Website Field */}
+                        <div className="space-y-2">
+                            <label htmlFor="website" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <FaGlobe className="text-customPurple" />
+                                Website (Optional)
+                            </label>
+                            <input
+                                type="text"
+                                id="website"
+                                {...register("website")}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-customPurple focus:border-transparent transition-all duration-200"
+                                placeholder="https://your-company.com"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <Button
+                            type="submit"
+                            className="w-full bg-customPurple hover:bg-customPurple/90 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>Submitting...</span>
+                                </div>
+                            ) : (
+                                companyId ? 'Update Company' : 'Create Company'
+                            )}
                         </Button>
-                        {imagePreview && (
-                            <div className='w-20 h-20 mb-2'>
-                                <IoIosClose onClick={() => {
-                                    setImagePreview(null);
-                                    setIsImageUploaded(false);
-                                    setCompanyData(prev => ({ ...prev, imageurl: null }));
-                                }
-                                } className='float-right cursor-pointer text-xl' />
-                                <img src={imagePreview} alt="Uploaded Preview" className='' />
-                            </div>)}
-
-                    </div>
-                    <div className='flex flex-col gap-y-1'>
-                        <label htmlFor="description" className='text-md text-left font-semibold font-Roboto'>About us</label>
-                        <textarea
-                            id="description"
-                            {...register("description")}
-                            rows={4} cols={50}
-                            className='focus:outline-none active:outline-none border-[1px] font-Lato rounded-md px-1 py-1 focus:border-customPurple '
-
-                        />
-                        {errors.description && (
-                            <div className="text-red-600 text-left">{errors.description.message}</div>
-                        )}
-                    </div>
-                    <div className='flex flex-col gap-y-1' >
-                        <label htmlFor="website" className='text-md text-left font-semibold font-Roboto'>Website(Optional)</label>
-                        <input type="text"
-                            id="website"
-                            {...register("website")}
-                            className='focus:outline-none active:outline-none border-[1px] rounded-md px-1 py-1 focus:border-customPurple '
-                        />
-                    </div>
-                    <Button className='bg-customPurple mt-2' type="submit">{isSubmitting ? "submitting..." : "Submit"}</Button>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    )
+    );
 }
